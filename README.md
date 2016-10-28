@@ -2242,3 +2242,1142 @@ done
 	当SET NOCOUNT on时候，将不向客户端发送存储过程每个语句的DONE_IN_proc消息，如果存储过程中包含一些并不返回实际数据的语句，网络通信流量便会大量减少，可以显著提高应用程序性能；
 	SET NOCOUNT 指定的设置时在执行或运行时候生效，分析时候不生效。
 
+
+
+##  work note (in SCB)
+## 
+setuser ? ? 
+说明 允许数据库所有者充当其他用户。 
+
+语法 setuser ["user_name"]
+
+示例 数据库所有者在数据库中临时使用 Mary 的标识来为 Joe 授予 authors 
+
+（Mary 拥有的表）的权限：
+
+setuser "mary" go
+
+grant select on authors to joe setuser
+
+go 
+
+用法 
+.数据库所有者使用 setuser 来采用其他用户的标识，从而可以使用其 他用户的数据库对象、授予权限、创建对象或用于其它目的。
+
+. 除了登录帐户 “sa”运行的会话以外，当数据库所有者使用 setuser 命令时，Adaptive Server 将检查被模拟的用户的权限，而并非数据库 所有者的权限。被模拟的用户必须在数据库的 sysusers 表中列出。
+
+. setuser 仅能影响本地数据库中的权限。它不会影响远程过程调用或 其它数据库中的访问对象。 
+
+. setuser 会一直有效，直到发出另一个 setuser 命令，或使用 use 命令 更改当前数据库为止。 
+
+. 创建数据库时， setuser 无效。
+
+. 如果执行 setuser 时不使用用户名，则可恢复数据库所有者的初始标 识。
+
+. 系统管理员可以使用 setuser 创建将由另一用户拥有的对象。不过， 因为系统管理员是在系统管理员权限系统之外进行操作，他或她就 不能使用 setuser 获取其他用户的权限。
+
+标准 符合 ANSI SQL 的级别Transact-SQL 扩展。
+
+权限 对 setuser 的权限检查因您的细化权限设置而异。
+
+ 
+
+细化权限已启用 在启用细化权限的情况下，您必须具有 setuser 特权才能运行 setuser。缺省情 况下，会为数据库所有者授予 setuser 特权。
+
+细化权限已禁用 如果禁用细化权限， setuser 特权缺省情况下授予数据库所有者，并且不能移 交。
+
+
+## T_SQL中的go
+go 是SYBASE和SQL Server中用来表示事物结束，提交并确认结果，相当于ORACLE的Commit
+SQL Server 实用工具将 GO 解释为应将当前的 Transact-SQL 批处理语句发送给 SQL Server 的信号。当前批处理语句是自上一 GO 命令后输入的所有语句，若是第一条 GO 命令，则是从特殊会话或脚本的开始处到这条 GO 命令之间的所有语句。
+SQL Server 应用程序可将多条 Transact-SQL 语句作为一个批处理发给 SQL Server 去执行。在此批处理中的语句编译成一个执行计划。程序员在 SQL Server 实用工具中执行特定语句，或生成 Transact-SQL 语句脚本在 SQL Server 实用工具中运行，用 GO 来标识批处理的结束。
+如果基于 DB-Library、ODBC 或 OLE DB APIs 的应用程序试图执行 GO 命令时会收到语法错误。SQL Server 实用工具永远不会向服务器发送 GO 命令。
+权限
+GO 是一个不需权限的实用工具命令。可以由任何用户执行。
+示例
+下面的示例创建两个批处理。第一个批处理只包含一条 USE pubs 语句，用于设置数据库上下文。剩下的语句使用了一个局部变量，因此所有的局部变量声明必须在一个批处理中。这一点可通过在最后一条引用此变量的语句之后才使用 GO 命令来做到。
+USE pubs
+GO
+DECLARE   @NmbrAuthors   int
+SELECT   @NmbrAuthors   =   COUNT ( * )
+FROM authors
+PRINT   ' The number of authors as of '   +
+        CAST ( GETDATE () AS   char ( 20 )) +   ' is '   +
+        CAST ( @NmbrAuthors   AS   char ( 10 ))
+GO
+
+
+
+
+## ASE中事务的模式
+http://blog.chinaunix.net/uid-16765068-id-2998749.html
+"非链式模式"，又叫做"自动提交"模式。当执行完一条DML 语句之后，比如insert、update、delete，ASE会自动提交事务。如果事务运行在非链式模式下，并且事务要执行多个SQL语句的话，必须显示地执行"begin transaction"开始事务，执行"commit"或"rollback"语句以结束事务。这种事务模式是ASE中（比如isql和open client应用）事务的缺省模式。
+
+
+
+
+http://www.cnblogs.com/rollenholt/p/3776923.html
+
+
+http://database.9sssd.com/sybase/art/537
+
+# sysobjects表 # 
+
+select 'select count(1), '' , name, '' from  ', name from sysobjects where name = 'GMRFXONOPVIEW@MUREXDDM.PROD'
+
+
+ Name        Owner     Object_type            
+ ----------  --------  ---------------------- 
+ sysobjects  DMDBO     system table    
+
+
+ Data_located_on_segment     When_created        
+ --------------------------  ------------------- 
+ system                      6/4/2007 9:36:41 AM 
+
+
+Column_name      Type      Length     Prec     Scale     Nulls     Default_name     Rule_name     Access_Rule_name     Identity    
+ ---------------  --------  ---------  -------  --------  --------  ---------------  ------------  -------------------  ----------- 
+ name             sysname   30         (null)   (null)    false     (null)           (null)        (null)               false       
+ id               int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ uid              int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ type             char      2          (null)   (null)    false     (null)           (null)        (null)               false       
+ userstat         smallint  2          (null)   (null)    false     (null)           (null)        (null)               false       
+ sysstat          smallint  2          (null)   (null)    false     (null)           (null)        (null)               false       
+ indexdel         smallint  2          (null)   (null)    false     (null)           (null)        (null)               false       
+ schemacnt        smallint  2          (null)   (null)    false     (null)           (null)        (null)               false       
+ sysstat2         int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ crdate           datetime  8          (null)   (null)    false     (null)           (null)        (null)               false       
+ expdate          datetime  8          (null)   (null)    false     (null)           (null)        (null)               false       
+ deltrig          int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ instrig          int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ updtrig          int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ seltrig          int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ ckfirst          int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ cache            smallint  2          (null)   (null)    false     (null)           (null)        (null)               false       
+ audflags         int       4          (null)   (null)    true      (null)           (null)        (null)               false       
+ objspare         int       4          (null)   (null)    false     (null)           (null)        (null)               false       
+ versionts        binary    12         (null)   (null)    true      (null)           (null)        (null)               false       
+ loginame         varchar   30         (null)   (null)    true      (null)           (null)        (null)               false 
+
+
+
+ keytype     object       related_object     object_keys                 related_keys             
+ ----------  -----------  -----------------  --------------------------  ------------------------ 
+ common      syscolumns   sysobjects         id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      syscomments  sysobjects         id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      sysdepends   sysobjects         id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      sysindexes   sysobjects         id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      syskeys      sysobjects         depid, *, *, *, *, *, *, *  id, *, *, *, *, *, *, *  
+ foreign     syskeys      sysobjects         id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      sysobjects   sysprocedures      id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      sysobjects   sysprotects        id, *, *, *, *, *, *, *     id, *, *, *, *, *, *, *  
+ common      sysobjects   sysusers           uid, *, *, *, *, *, *, *    uid, *, *, *, *, *, *, * 
+ primary     sysobjects    -- none --        id, *, *, *, *, *, *, *     *, *, *, *, *, *, *, *   
+
+
+
+# C:\sybase\ini\sql.ini被替换了（Jerry发过来的sql.ini）
+
+
+# 查前4条数据
+select top 4 * from  DM_TRNRP_PL3_REP 
+
+# 创建新表的一种方法
+select top 4 * from DM_TRNRP_PL3_REP into DM_TRN_SCF_PL3_REP
+
+
+#select into from 和 insert into select #
+都是用来复制表，两者的主要区别为：select into from 要求目标表不存在，因为在插入时会自动创建。insert into select from要求目标表存在
+insert into Table2(f1,f2,...) select v1,v2,... from Table1 ###要求目标表Table2必须存在
+select v1,v2 into Table2 from Table1 ###要求目标表Table2不存在，插入时会自动创建表Table2,
+例: select top 4 * into  DM_TRN_SCF_PL3_REP from DM_TRNRP_PL3_REP 
+
+## 复制表结构/表数据		
+	复制表结构select * into newtablename from tablename where 1<>1		
+	复制相同表结构数据insert into table_a select * from table_b		
+	复制表结构和数据到新表select * into newtablename from tablename		
+
+
+# truncate tabel与delete table的区别/ 与drop table#
+truncate tabel和delete table， 它们都是删除表中的数据而不能删除表结构，truncate 不可回滚，只能删除整个表的数据。delete可以回滚，可以删除表中某一条数据。
+truncate table DM_TRN_COM_PL3_REP. drop table DM_TRN_COM_PL3_REP 才是真正删除这个表
+
+
+# set IDENTITY_INSERT #
+例：执行insert into DM_TRN_COM_PL3_REP(xx,xx,...,xx) (select xx,xx,...,xx from DM_TRNRP_PL3_REP PL3 where PL3.M_TRN_FMLY = 'COM')时报以下错误
+------------------------ Execute ------------------------
+Warning: A non-null value cannot be inserted into a TIMESTAMP column by the user. The database timestamp value has been inserted into the TIMESTAMP field instead.
+Explicit value specified for identity field in table 'DM_TRN_COM_PL3_REP' when 'SET IDENTITY_INSERT' is OFF.
+----------------- Done ( 1 errors ) ------------------
+分析：想要将值插入到自动编号（或者说是标识列，IDENTITY）中去，需要设定set IDENTITY_INSERT DMDBO.DM_TRN_COM_PL3_REP on，因为当IDENTITY_INSERT设置为OFF时，不能向表中的标识列插入显示值。
+解决办法：
+set IDENTITY_INSERT DMDBO.DM_TRN_COM_PL3_REP on
+go
+再执行insert into DM_TRN_COM_PL3_REP(xx,xx,...,xx) (select xx,xx,...,xx from DM_TRNRP_PL3_REP PL3 where PL3.M_TRN_FMLY = 'COM')，OK了！
+然后执行
+set IDENTITY_INSERT DMDBO.DM_TRN_IRD_PL3_REP on
+go
+insert into DM_TRN_IRD_PL3_REP(xx,xx,...,xx) (select xx,xx,...,xx from DM_TRNRP_PL3_REP PL3 where PL3.M_TRN_FMLY = ‘IRD')又报以下错误
+------------------------ Execute ------------------------
+Unable to 'SET IDENTITY_INSERT' for table 'DMDBO.DM_TRN_IRD_PL3_REP' because IDENTITY_INSERT or IDENTITY_UPDATE is already ON for the table 'DM_TRN_COM_PL3_REP' in database 'MXGDM_ENV802'.
+----------------- Done ( 1 errors ) ------------------
+解决办法：
+set IDENTITY_INSERT DMDBO.DM_TRN_COM_PL3_REP off
+set IDENTITY_INSERT DMDBO.DM_TRN_IRD_PL3_REP on
+go
+insert into DM_TRN_IRD_PL3_REP(xx,xx,...,xx) (select xx,xx,...,xx from DM_TRNRP_PL3_REP PL3 where PL3.M_TRN_FMLY = ‘IRD')，OK了！
+
+
+# str_replace() # '' 与 ‘ ’ 与 NULL#
+例1：select M_RSKSECTION from DM_TRNRP_PL3_REP where  M_IDENTITY = 179151
+查询结果：EUR/JPY
+例2：select str_replace(M_RSKSECTION,"/","") from DM_TRNRP_PL3_REP where  M_IDENTITY = 179151
+查询结果：EUR JPY
+例3：select str_replace(M_RSKSECTION,"/",NULL) from DM_TRNRP_PL3_REP where  M_IDENTITY = 179151
+查询结果：EURJPY
+解析： ""的长度在一般语言中都是0，但在sybase中是1，''是长度为1的space；' '是长度为2的space，space（空格）就是空字符串，即没有内容的字符串。
+所以用""替换掉/后，输出串中会以一个空格替换。若要实现去除"/"的目的，需要用NULL或null来换掉""，这样才有正确结果。
+
+
+
+# left (full) join #
+1)内联接（典型的联接运算，使用像 =  或 <> 之类的比较运算符）。包括相等联接和自然联接。    
+2)外联接.可以是左向外联接、右向外联接或完整外部联接。
+2.1)左向外联接的结果集包括  LEFT OUTER子句中指定的左表的所有行，而不仅仅是联接列所匹配的行。如果左表的某行在右表中没有匹配行，则在相关联的结果集行中右表的所有选择列表列均为空值。
+2.2)完整外部联接(FULL  JOIN 或 FULL OUTER JOIN)返回左表和右表中的所有行。当某行在另一个表中没有匹配行时，则另一个表的选择列表列包含空值。如果表之间有匹配行，则整个结果集行包含基表的数据值
+例：其他DB的写法
+select T1.*,T5.* from DM_TRNRP_PL3_REP T1 left join TAB_RT_INDEX_REP T5,
+on T1..M_TP_RTMNDX0 *= T5.M_INDEX
+Sybase的写法
+select * from DM_TRNRP_PL3_REP T1, TAB_RT_INDEX_REP T5,
+where T1.M_TP_RTMNDX0 *= T5.M_INDEX
+规则1：The table 'TRN_USRG_DBF' is an inner member of an outer-join clause. This is not allowed if the table also participates in a regular join clause.
+经验：需要查找两张表同时存在的数据，使用内连接需要查找两张表中一张表存在，另一张表不存在的时候使用左外链接 或 右外链接
+
+
+# sp_spaceused $table_name
+
+
+# sp_helptext $tabel_name
+
+
+#declare @v
+数据库脚本中，declare变量定义，定义的变量需要以@符号开头。
+
+#set @v=值
+set @where_flag_s2 = "Y" ->脚本中为变量赋值
+
+# Decimal(12, 5)： 12是定点精度（小数点左边和右边可以存储的十进制数字的最大个数，最大精度为38），5是小数位数（小数点右边可以存储的十进制数字的最大个数，默认小数位数是0）
+
+
+# isnull(@spotrate, 1)
+如果@spotrate为空，则返回1，如果不为空，返回@spotrate. 
+
+
+#  case when
+
+1) 
+
+CASE result 
+         WHEN 'v1' THEN 1
+         WHEN 'V2' THEN 2
+	 ELSE 0
+END
+
+2) CASE搜索函数
+CASE WHEN result = 'v1' THEN 1
+     WHEN result = 'v2' THEN 2
+     ELSE 0
+END
+
+其中result = 'v1/2'可以替换为其他条件表达式。如果有多个case when 表达式符合条件，将只返回第一个符合条件的子句，其余子句将被忽略。
+如性别在表中存在的数字1/2，但希望查询出来男女时，可以这样
+select (case Gender when 1 then '男'
+                    when 2 then '女'
+              else '其他' END) as Gender from Table1
+
+
+
+#游标
+对游标进行操作的语句使用游标名称或游标变量引用游标。DEALLOCATE 删除游标与游标名称或游标变量之间的关联。
+
+# declare cursor的使用
+DECLARE abc CURSOR FOR SELECT * FROM $TABLE #分配游标
+open 游标 #填充结果集
+fetch 游标 into @变量 #从结果集返回行
+
+#@@sqlstatus
+在使用游标的时候，@@sqlstatus保存着FETCH语句执行状态的信息，其值与含义如下：
+0：成功完成FETCH语句
+1：FETCH语句有错误
+2：表示结果集中不再有数据，即游标已经移至结果集中最后一行，并已经提交了一条FETCH语句。
+
+#deallocate cursor XXXX 
+删除游标引用（释放内存空间？）
+
+#procedure中的临时表
+临时表只在当前的session中有效。存储过程执行完成时，将自动删除在存储过程中创建的本地临时表在
+
+#将VAR_EOD环境中的数据迁移到BODEV8环境中
+background:Execute below SQL on BODEV8 get the resultSet are all null
+	select * from FXCRDIVH_RSK
+	select * from FXCRDIVB_RSK
+	
+	select * from FXCRDDH_RSK
+	select * from FXCRDDB_RSK
+Resolve:
+Step1: bcp MXG_VAR_EOD.MUREXDB.FXCRDIVH_RSK out FXCRDIVH_RSK.csv -S mx10a_sql -UINSTAL -b10000 -c -t "|" -PINSTALL
+       bcp MXG_VAR_EOD.MUREXDB.FXCRDIVB_RSK out FXCRDIVB_RSK.csv -S mx10a_sql -UINSTAL -b10000 -c -t "|" -PINSTALL
+       bcp MXG_VAR_EOD.MUREXDB.FXCRDDH_RSK out FXCRDDH_RSK.csv -S mx10a_sql -UINSTAL -b10000 -c -t "|" -PINSTALL
+       bcp MXG_VAR_EOD.MUREXDB.FXCRDDB_RSK out FXCRDDB_RSK.csv -S mx10a_sql -UINSTAL -b10000 -c -t "|" -PINSTALL
+Step2: bcp MXG_BODEV8.MUREXDB.FXCRDIVH_RSK in FXCRDIVH_RSK.csv -S mx11a_sql -UMUREXDB -b10000 -c -t "|" -PGL1MPSE
+       bcp MXG_BODEV8.MUREXDB.FXCRDIVB_RSK in FXCRDIVB_RSK.csv -S mx11a_sql -UMUREXDB -b10000 -c -t "|" -PGL1MPSE
+       bcp MXG_BODEV8.MUREXDB.FXCRDDH_RSK in FXCRDDH_RSK.csv -S mx11a_sql -UMUREXDB -b10000 -c -t "|" -PGL1MPSE
+       bcp MXG_BODEV8.MUREXDB.FXCRDDB_RSK in FXCRDDB_RSK.csv -S mx11a_sql -UMUREXDB -b10000 -c -t "|" -PGL1MPSE
+bcp的局限性：最大只能迁移２Ｇ的数据？？？？？？？？？？
+
+## 差、交 运算的SQL实现
+http://blog.csdn.net/gaojinshan/article/details/37568531
+
+## 视图
+http://zhidao.baidu.com/link?url=oHc3uVSmJdlnVAASBGvRSJayLXRwCrfJ7FJ_YBH5hY5UGIhQdxfv3sPWUSHCg8k8KqjIVkhj-zlOIyEQD0qQLq
+
+
+## update set from 语句格式
+(MS SQL Server)语句：update   b  set   ClientName   =   a.name   from   a,b   where   a.id   =   b.id  
+(Oralce)语句：update   b  set   (ClientName)   =  (SELECT name FROM a WHERE b.id = a.id)
+(MySQL)语句：: UPDATE A, B SET A1 = B1, A2 = B2, A3 = B3 WHERE A.ID = B.ID
+当where和set都需要关联一个表进行查询时，整个 update执行时，就需要对被关联的表进行两次扫描，显然效率比较低。
+对于这种情况，Sybase和SQL SERVER的解决办法是使用UPDATE...SET...FROM...WHERE...的语法，实际上就是从源表获取更新数据。
+在 SQL 中，表连接（left join、right join、inner join 等）常常用于 select 语句，其实在 SQL 语法中，这些连接也是可以用于update 和 delete 语句的，在这些语句中使用 join 还常常得到事半功倍的效果。
+Update T_OrderForm SET T_OrderForm.SellerID =B.L_TUserID
+FROM T_OrderForm A LEFT JOIN T_ProductInfo   B ON B.L_ID=A.ProductID
+用来同步两个表的数据!
+Oralce和DB2都支持的语法：
+UPDATE A  SET (A1, A2, A3) = (SELECT B1, B2, B3 FROM B WHERE A.ID = B.ID)
+MS SQL Server不支持这样的语法，相对应的写法为：
+UPDATE A  SET A1 = B1, A2 = B2, A3 = B3  FROM A LEFT JOIN B ON A.ID = B.ID
+个人感觉MS SQL Server的Update语法功能更为强大。MS SQL SERVER的写法：
+UPDATE A SET A1 = B1, A2 = B2, A3 = B3 FROM A, B WHERE A.ID = B.ID
+在Oracle和DB2中的写法就比较麻烦了，如下：
+UPDATE A SET (A1, A2, A3) = (SELECT B1, B2, B3 FROM B WHERE A.ID = B.ID)
+WHERE ID IN (SELECT B.ID FROM B WHERE A.ID = B.ID)
+Mysql的写法是:
+UPDATE A, B SET A1 = B1, A2 = B2, A3 = B3 WHERE A.ID = B.ID
+
+
+##临时表
+
+临时对象都以#或##为前缀，临时表是临时对象的一种，还有例如临时存储过程、临时函数之类的临时对象，临时对象都存储在tempdb中。以#前缀的临时表为本地的，因此只有在当前用户会话中才可以访问，而##前缀的临时表是全局的，因此所有用户会话都可以访问。临时表以会话为边界，只要创建临时表的会话没有结束，临时表就会持续存在，当然用户在会话中可以通过DROP TABLE命令提前销毁临时表。
+
+我们前面说过临时表存储在tempdb中，因此临时表的访问是有可能造成物理IO的，当然在修改时也需要生成日志来确保一致性，同时锁机制也是不可缺少的。
+
+跟表变量另外一个显著去别就是临时表可以创建索引，也可以定义统计数据，因此SQL Server在处理访问临时表的语句时需要考虑执行计划优化的问题。
+
+全局临时表的名称以两个数字符号 (##) 打头，创建后对任何用户都是可见的，当所有引用该表的用户从 SQL Server 断开连接时被删除。
+
+
+## Insufficient result space for explicit conversion of NUMERIC value '1200000000.00' to a VARCHAR field.
+You can convert exact and approximate numeric data to a character type. If the new type is too short to accommodate the entire string, an insufficient space error is generated. For example, the following conversion tries to store a 5-character string in a 1-character type:
+select convert(char(1), 12.34)
+When converting float data to a character type, the new type should be at least 25 characters long.
+按SQL2005来说，varchar如果有定义字符数，那么最大就是8000，超过会产生二进制截断。
+而varchar(max)、nvarchar(max) 和 varbinary(max) 统称为大值数据类型。可以存储最大为 2^31-1 个字节的数据。
+
+## 数据类型
+　一、字符型
+　　VARCHAR VS CHAR
+　　VARCHAR型和CHAR型数据的这个差别是细微的，但是非常重要。他们都是用来储存字符串长度小于255的字符。
+
+　　二、文本型
+　　TEXT
+　　使用文本型数据，可以存放超过二十亿个字符的字符串。当需要存储大串的字符时，应该使用文本型数据。
+
+　　三、数值型
+　　SQL支持许多种不同的数值型数据。可以存储整数 INT 、小数 NUMERIC、和钱数 MONEY。
+
+　　四、逻辑型
+　　BIT
+　　如果使用复选框（ CHECKBOX）从网页中搜集信息，可以把此信息存储在BIT型字段中。BIT型字段只能取两个值：0或1。
+　　当心，在创建好一个表之后，不能向表中添加 BIT型字段。如果打算在一个表中包含BIT型字段，必须在创建表时完成。
+
+　　五、日期型
+　　DATETIME VS SMALLDATETIME
+　　一个 DATETIME型的字段可以存储的日期范围是从1753年1月1日第一毫秒到9999年12月31日最后一毫秒。 
+## 日期型函数的运算
+例：通过给定的一个日期，通过一种运算，得到一个正确的日期的值
+比如：date1=2002-8-30，计算date2=date+3 应正确得到date2=2002-9-2（这里面要注意当时间由一个月份向另一个月份过度的时候）
+答： 使用dateadd函数，如select dateadd(dd,-7,M_REP_DATE_2) from DM_DATES_REP
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--前一天，给定日期的前一天
+SELECT DATEADD(DAY,-1,@Date) AS 前一天
+--后一天，给定日期的后一天 
+SELECT DATEADD(DAY,1,@Date) AS 后一天
+GO
+
+## select convert(date,SUBSTRING('20140708141006',1,8)) 
+ 
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,'1900-01-01',@Date),'1900-01-01') AS 所在月的第一天
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,0,@Date),0) AS 所在月的第一天
+--上面两种算法精确到天 时分秒均为00:00:00.000
+--下面算法课以保留时分秒
+--思路：用给定日期减去月第一天与给定日期差的天数
+SELECT DATEADD(DAY,1-DATEPART(DAY,GETDATE()),GETDATE())
+GO
+
+
+
+
+--月末，计算给定日期所在月的最后一天
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--思路：当前月的下一月1号在减1天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,1+DATEDIFF(MONTH,'1900-01-01',@Date),'1900-01-01')) AS 所在月的最一天
+SELECT DATEADD(MONTH,1+DATEDIFF(MONTH,'1900-01-01',@Date),'1900-01-01')-1 AS 所在月的最一天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,1+DATEDIFF(MONTH,0,@Date),0)) AS 所在月的最一天
+SELECT DATEADD(MONTH,1+DATEDIFF(MONTH,0,@Date),0)-1 AS 所在月的最一天
+
+
+--思路：与月初计算思路相同
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,'1899-12-31',@Date),'1899-12-31') AS 所在月的最一天
+--精简算法，1899-12-31 用-1代替
+--  select CAST( -1 as datetime )    --1899-12-31 00:00:00.000 = 1900-01-01 - 1天
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,-1,@Date),-1) AS 所在月的最一天
+--保留时分秒的算法
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,1,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)))
+GO
+
+
+--计算给定日期所在月的上月第一天
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--当前月第一天减去一个月
+SELECT DATEADD(MONTH,-1,DATEADD(MONTH,DATEDIFF(MONTH,0,@Date),0)) AS 上月第一天
+--简化
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,0,@Date)-1,0) AS 上月第一天
+--另一种当前月第一天算法
+SELECT DATEADD(MONTH,-1,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)) 上月第一天
+GO
+
+
+
+
+
+
+
+
+
+
+--计算给定日期所在月的上月最后一天
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--当前月第一天减去一天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,DATEDIFF(MONTH,0,@Date),0)) AS 上月最后一天
+--另一种当前月第一天算法
+SELECT DATEADD(DAY,-1,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)) 上月最后一天
+SELECT DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)-1 上月最后一天
+--另一种算法， 
+ 
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,-1,@Date)-1,-1)
+--另一种当前月算法
+SELECT DATEADD(DAY,-1,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)) 上月最后一天
+--简化
+SELECT DATEADD(DAY,0-DATEPART(DAY,@Date),@Date) 上月最后一天
+GO
+
+
+
+
+
+
+
+
+--计算给定日期所在月的下月第一天
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+SELECT DATEADD(MONTH,1,DATEADD(MONTH,DATEDIFF(MONTH,0,@Date),0)) AS 下月第一天
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,0,@Date)+1,0) AS 下月第一天
+SELECT DATEADD(MONTH,1,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date)) 下月第一天
+GO
+
+
+
+
+--计算给定日期所在月的下月最后一天
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--当前月第一天加2个月再减去1天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,2,DATEADD(MONTH,DATEDIFF(MONTH,0,@Date),0))) AS 下月最后一天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,DATEDIFF(MONTH,0,@Date)+2,0)) AS 下月最后一天
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,0,@Date)+2,0)-1 AS 下月最后一天
+SELECT DATEADD(MONTH,DATEDIFF(MONTH,-1,@Date)+1,-1) 下月最后一天
+SELECT DATEADD(DAY,-1,DATEADD(MONTH,2,DATEADD(DAY,1-DATEPART(DAY,@Date),@Date))) 下月最后一天
+GO
+
+
+
+
+
+
+--年度计算
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--年初，计算给定日期所在年的第一天
+SELECT DATEADD(YEAR,DATEDIFF(YEAR,0,@Date),0) AS 所在年的第一天
+--年末，计算给定日期所在年的最后一天
+SELECT DATEADD(YEAR,DATEDIFF(YEAR,-1,@Date),-1) AS 所在年的最后一天
+--上一年年初，计算给定日期所在年的上一年的第一天
+SELECT DATEADD(YEAR,DATEDIFF(YEAR,0,@Date)-1,0) AS 所在年的上一年的第一天
+--上一年年末，计算给定日期所在年的上一年的最后一天
+SELECT DATEADD(YEAR,DATEDIFF(YEAR,0,@Date),-1) AS 所在年的上一年的最后一天
+--下一年年初，计算给定日期所在年的下一年的第一天
+SELECT DATEADD(YEAR,1+DATEDIFF(YEAR,0,@Date),0) AS 所在年的下一年的第一天
+--下一年年末，计算给定日期所在年的下一年的最后一天
+SELECT DATEADD(YEAR,1+DATEDIFF(YEAR,-1,@Date),-1) AS 所在年的下一年的最后一天
+GO
+
+
+--季度计算
+DECLARE @Date  DATETIME
+SET @Date=GETDATE()
+--季度初，计算给定日期所在季度的第一天
+SELECT DATEADD(QUARTER,DATEDIFF(QUARTER,0,@Date),0) AS 当前季度的第一天
+--季度末，计算给定日期所在季度的最后一天
+SELECT DATEADD(QUARTER,1+DATEDIFF(QUARTER,0,@Date),-1) AS 当前季度的最后一天
+--上个季度初
+SELECT DATEADD(QUARTER,DATEDIFF(QUARTER,0,@Date)-1,0) AS 当前季度的上个季度初
+--上个季度末
+SELECT DATEADD(QUARTER,DATEDIFF(QUARTER,0,@Date),-1) AS 当前季度的上个季度末
+--下个季度初
+SELECT DATEADD(QUARTER,1+DATEDIFF(QUARTER,0,@Date),0) AS 当前季度的下个季度初
+--下个季度末
+SELECT DATEADD(QUARTER,2+DATEDIFF(QUARTER,0,@Date),-1) AS 当前季度的下个季度末
+GO
+
+## 各数据类型之间的转换
+
+
+
+## Group By中Select指定的字段限制
+在select指定的字段要么就要包含在Group By语句的后面，作为分组的依据；要么就要被包含在聚合函数中。
+(select指定的字段必须是“分组依据字段”，其他字段若想出现在select中则必须包含在聚合函数中)
+
+## Having与Where的区别 
+where 子句的作用是在对查询结果进行分组前，将不符合where条件的行去掉，即在分组之前过滤数据，
+where条件中不能包含聚组函数，使用where条件过滤出特定的行。
+having 子句的作用是筛选满足条件的组，即在分组之后过滤数据，条件中经常包含聚组函数，使用having 条件过滤出特定的组，
+也可以使用多个分组标准进行分组。
+
+## 声明游标的SQL语句中不能有任何变量，如declare c_lt cursor for select @f1 from @table where @condition 编译时都编译不过去。
+另外遍历游标的程序块必须放在create procedure begin ... end 中。
+
+
+## use
+USE 将数据库上下文更改为指定数据库。
+语法
+USE { database } // "database"是用户上下文要切换到的数据库的名称。数据库名称必须符合标识符的规则。 
+
+
+----------over work note -------------
+
+## case-when.sql
+select 
+PL3.M_TP_STATUS2 as 'TP_STATUS2', 
+PL3.M_TP_NBLTI as 'TP_NBLTI', 
+PL3.M_NB as 'NB', 
+MOP_ALL.M_DEST_NB as 'DEST_NB', 
+PL3.M_MRPL_ONB as 'MRPL_ONB', 
+case when PL3.M_MRPL_ONB = -1 then convert(char(10),MOP_ALL.M_DATE_CMP, 3) else convert(char(10),PL3.M_MRPL_DATE, 3) end as 'MRPL_DATE',
+case when PL3.M_TP_MOPLSTL <> 'RPL_M' and MOP_ALL.M_DATE = PL3.M_TP_DTETRN then 'Y' 
+	 when PL3.M_TP_MOPLSTL = 'RPL_M' and MOP_ALL.M_DATE = PL3.M_TP_DTESYS then 'Y'	 
+	 else 'N' end as SAME_D_CNA,
+case when PL3.M_TP_MOPLSTL = 'RPL_M' 
+		then convert(char(10),MOP_ALL.M_DATE, 3) 
+	 else convert(char(10),MOP_ALL.M_DATE_CMP, 3) 
+end as 'OPT_MOPLST',
+convert(char(10),MOP_ALL.M_DATE, 3) as 'OPT_MOPLSD',
+case when PL3.M_TP_MOPLSTL = 'RPL_M' 
+		then 'Cancel & reissue' 
+	  else 'Cancel' end 
+as 'MOP_LBL',
+PL3.M_TRN_FMLY as 'TRN_FMLY', 
+PL3.M_TRN_GRP as 'TRN_GRP', 
+PL3.M_TRN_TYPE as 'TRN_TYPE',
+PL3.M_TP_TYPO as 'TP_TYPO', 
+convert(char(10),PL3.M_TP_DTESYS, 3) as 'TP_DTESYS', 
+convert(char(10),PL3.M_TP_DTETRN, 3) as 'TP_DTETRN', 
+PL3.M_TP_PFOLIO as 'TP_PFOLIO',
+PL3.M_TP_CNTRP as 'TP_CNTRP', 
+CTP.M_NAME as 'TP_CNTRPLB', 
+OPUDF.M_CHANGE_TYP as 'CHANGE_TYP', 
+OPUDF.M_COMMENTS as 'COMMENTS',
+case 
+	when 
+		case 
+		    when 'Non-Operational' in (select C_R_CODE from MOP_REISSUE_TRN_CODE where PKG_ID <> 0 and PKG_ID = HDR.M_LTI_NB) then 'Non-Operational'
+			else 'Operational' 
+	    end='111' then ''
+	else 'Non-Operational'
+end as 'C_R_CODE',
+OPUDF.M_REQUESTOR as 'REQUESTOR', 
+PL3.M_TP_TRADER as 'TP_TRADER', 
+MOP_ALL.M_USR_NAME as 'TRADER',
+PL3.M_TP_STRTGY as 'TP_STRTGY', 
+PL3.M_NB_EXT as 'NB_EXT', 
+UDF.M_MARKETER as 'MARKETER',
+rtrim(HDR.M_BCOMMENT0)+'|'+ rtrim(HDR.M_BCOMMENT1)+'|'+ rtrim(HDR.M_BCOMMENT2) as 'BCOMMENT', 
+rtrim(HDR.M_SCOMMENT0)+'|'+rtrim(HDR.M_SCOMMENT1)+'|'+rtrim(HDR.M_SCOMMENT2) as 'SCOMMENT',
+MKTOP.M_BO_SGN as 'BO_SGN',PL3.M_TP_ENTITY as 'TP_ENTITY', 
+UDF.M_SRC_SYSTEM as 'SRC_SYSTEM',
+case when MOP_ALL.FINANCIAL = '' then '' else '"'+rtrim(MOP_ALL.FINANCIAL)+'"' end as 'FINANCIAL',
+case when MOP_ALL.NON_FIN = '' then '' else '"'+rtrim(MOP_ALL.NON_FIN)+'"' end as 'NON_FIN'
+from 
+DM_TRN_IRD_PL3_REP PL3, 
+DM_COUNTERPARTY_REP CTP, 
+TAB_UDF_MKTOP_REP OPUDF, 
+DM_UDF_IRD_REP UDF,
+TAB_TRN_HDR1_REP HDR, 
+MOP_ALL_TDY_REP MOP_ALL,
+TAB_MKTOP_REP MKTOP,
+TABLE#LIST#CLASSIFI_REP CLA   
+--vw_reissued_trn_code_rep REISSUE             
+WHERE                            
+PL3.M_NB = MOP_ALL.M_NB 
+and PL3.M_TP_CNTRP *= CTP.M_LABEL 
+and OPUDF.M_NB = MOP_ALL.M_ACT_NB1 
+and MOP_ALL.M_ACT_NB2 = PL3.M_QTY_INDEX
+and UDF.M_NB = PL3.M_NB 
+and HDR.M_NB = PL3.M_NB
+and MKTOP.M_NB = MOP_ALL.M_ACT_NB1   
+and MOP_ALL.M_ACT_NB2 = 0
+and Rtrim(MOP_ALL.M_USR_NAME)+"_"+Rtrim(MOP_ALL.M_USR_GROUP) *= CLA.M_USER_GRP
+
+## DB sharing
+1.	COMPILEED OBJECTS 
+When : when the table structure has been changed , then the store procedure and trigger and view which using this table should be re-compiled.  
+Why: Due to the structure change will lead to there are some change in the execution plan. If we use the incorrect execution plan , will impact the running time.
+How: a. sp_recompile table_name
+              The table name is the table which the structure has been changed
+          b. sp_depends table_name
+               the table name is the table which the structure has been changed. This sp will find all the objects which using this table.
+              Sp_recomple sp_name/view_name
+
+2.	DULK COPY
+What is it:
+The mechanism of bulk copy data
+How to config:
+sp_dboption database_name," select into/bulkcopy ",true
+how to check whether this setting is enable:
+sp_helpdb   if there is ‘select iinto/bulkcopy’ in the right hand side, it means the setting is enable.
+How can trigger the bulk copy
+Just the sentence of ‘select into ‘ can trigger it.
+
+3.	DATA TRUNK
+Description:
+In Database, the data will be stored in the page. The default page size is 8k. and one block include 8 pages, so the default block size is 64k. the database will not distribute the page one by one, it will distribute one block at one time. When the row size is bigger than the free page size, it will store in a new page, normally there is a parameter named PCTFREE, it is used to keep some space to update the data.  
+When we update the table and the length of the field is bigger that before or add some fields in the existing table , if the row size is bigger than page size, it will create a link and this record will be store in a new page. If there is not enough page in this block, it will create a new block for this table. So we will found the size of this table is twice than before.
+
+4.	THE EXCETATION SEQUENCE
+  (5)SELECT (6)DISTINCT < select list > 
+  (1)FROM < table source > 
+  (2)WHERE < condition > 
+  (3)GROUP BY < group by list > 
+  (4)HAVING < having condition > 
+  (7) ORDER BY < order by list >
+
+
+## dump
+CRQ000000119782
+
+
+
+CRQ000000123226  condition
+
+
+mxgdb7
+
+bash-3.2$ crontab -l|grep TCGBI
+11 19 * * 1-6 test -d /pos/home/sybpos2/scripts && /pos/home/sybpos2/scripts/cron_mxg_load.sh MXG_TCGBI mx7a_125_sql mxg_tcgbi > /pos/home/sybpos2/logs/mxg_tcgbi/cron_MXG_TCGBI.log 2>&1
+bash-3.2$ more /pos/home/sybpos2/scripts/cron_mxg_load.sh
+magdb7
+bash-3.2$ /nfsdumps/scripts/loaddb_mx $DB_NAME $DB_SERVER $MXG_FILE_NAME PROD_dumps/live/FO nfsdumps
+sybpos2
+sybase5000
+
+
+
+
+---------------------
+Hi Tim,
+
+As I check that is duplicate dump, I will remove it. Thanks.
+
+Hi Team,
+
+I will delete the below dumps 3:20pm:
+
+Magdb7.uk:/dumps/DEV_DUMPS/BACKUP_SPECIAL/20150701_MXGDM_RPT
+-rw-r--r--   1 sybpos2  sybase   2446257492 Oct  5 03:18 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S1
+-rw-r--r--   1 sybpos2  sybase   2445281934 Oct  5 03:21 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S2
+-rw-r--r--   1 sybpos2  sybase   2447189082 Oct  5 03:23 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S3
+-rw-r--r--   1 sybpos2  sybase   2447659524 Oct  5 03:25 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S4
+-rw-r--r--   1 sybpos2  sybase   2444807573 Oct  5 03:27 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S5
+-rw-r--r--   1 sybpos2  sybase   2449179162 Oct  5 03:29 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S6
+-rw-r--r--   1 sybpos2  sybase   2443653070 Oct  5 03:32 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S7
+-rw-r--r--   1 sybpos2  sybase   2442681681 Oct  5 03:34 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S8
+-rw-r--r--   1 sybpos2  sybase   2443905807 Oct  5 03:37 C4K_mxg_rpt_sql_MXGDM_RPT_20150701_Wed_1141.dump_S9
+
+If you have any concern, please let me know.
+
+Thank you.
+----------------------------
+Hi All,
+
+May I know who remove the below file or folder:
+
+magdb9.uk:/nfsdumps/DEV_DUMPS/MXG_FDR_DAILY_DUMP
+
+this folder is for backup daily dump with BO marker, and both MXG_DEV_DAILY, MXG_BAU_DAILY and MXG_TCGBI depend on this. Please do not remove it again.
+------------------------------
+MXML_ENV905 refresh done and already online now.
+------------------------------
+magdb7	MXG_PSS_DPS             	  325200.0 MB
+magdb7	MXML_DID                	   91192.0 MB
+magdb7	MXML_IRDFX_DEV2         	   91192.0 MB
+magdb10	MXGDM_FDR_EOD           	  356000.0 MB
+---------------------------------
+The same issue with the last dump again. When we try to refresh the dump which path is 
+magdb9.uk: /nfsdumps/PROD_dumps/20151114/FO,
+the below error message has been found:
+Backup Server: 6.32.2.3: compress::/nfsdumps/PROD_dumps/20151114/FO/C4K_mxg_sql_MXG_20151114_Sat_2249.dump_S8::07: volume not valid or not requested (server:
+ , session id: 12.)
+Backup Server: 1.14.2.4: Unrecoverable I/O or volume error.  This DUMP or LOAD session must exit.
+Msg 8009, Level 16, State 1:
+Server 'mx9a_sql', Line 1:
+Error encountered by Backup Server.  Please refer to Backup Server messages for details.
+
+Could you please help to transfer the last dump again and check the reason?
+
+Thank you.
+------------------------------------
+
+
+## Luca's sharing
+DB service: mx7a/b_125_sql, mx9a/b_sql, mx8a_sql, mx10a_sql, mx11a/b_sql, mx12a/b_sql
+
+------------
+magdb9.uk
+user:  sybpos2
+SN: sybase5000
+
+
+
+/pos/home/sybpos2 $ cd /dumps
+/dumps/dumps_ird1 $
+/dumps/dumps_ird2 $
+----------------
+
+magdb7.uk
+user:  sybpos2
+SN: sybase5000
+
+
+
+/pos/home/sybpos2 $ cd /dumps
+/dumps/special_backup $
+
+---------------
+
+ukspddmrx01a.uk
+
+MSD 2 wifi password: 59859888
+
+
+## refresh Dump
+	
+1. sybpos2/sybase5000 (oracle123)	
+1.填写文档Refresh_command_generator_V1.xlsm	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	Database获取方法：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	marker获取方法：
+	邮件中写的用邮件的，邮件中没写的用BO
+	
+	Dump File获取方法：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	Dump Folder获取方法：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	获取代码：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+2.执行代码	
+	Go to /nfsdumps/scripts
+	
+	
+	
+3.观察运行状态	
+	查询进程：ps -ef|grep tran
+	
+	
+	
+	
+	
+	通过log看运行进度：
+	cd /dumps/logs
+	ls -lrt
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	tail -100 MXG_PSS_DPS-20150717-050846-mx7a_125_sql-magdb8_YE_DUMPS-YEAR_END_DUMPS_DND-20131231_1159915_1-FO-C4K_mxg_sql_MXG_20131231_Tue_1600.dump-LOAD.log
+	
+	
+	
+	通过log确认运行完成
+	
+	
+	
+	
+	less MXG_PSS_DPS-20150717-050846-mx7a_125_sql-magdb8_YE_DUMPS-YEAR_END_DUMPS_DND-20131231_1159915_1-FO-C4K_mxg_sql_MXG_20131231_Tue_1600.dump-LOAD.log.txt
+	出现以下信息dump完成
+	
+	
+	
+	
+	
+	看transaction log 运行状况
+	
+	
+	
+	
+	tail -100 tranSync_mx7a_125_sql_MXG_TCGBI_20150716.log
+	出现以下信息则transaction log执行完成
+
+
+## freshe dump -sheet 2
+1.       Login magdb7.uk
+2.       Go to /nfsdumps/scripts
+3.       Run 
+           nohup ./loaddb_mx MXG_IRDFX_DEV73 mx7a_125_sql C4K_mxg_sql_MXG_20131231_Tue_1600.dump magdb8_YE_DUMPS/YEAR_END_DUMPS_DND/20131231_1159915_1 dumps MDS BO &
+4.       Change the transaction log location in env file, /pos/home/sybpos2/env/ tranSync.mx7a_125_sql_MXG_IRDFX_DEV73.env
+/dumps/magdb8_YE_DUMPS/YEAR_END_DUMPS_DND/20131231_1159915_1/tran
+5.       Run the command under /nfsdumps/scripts
+nohup ./tranSync.sh -e mx7a_125_sql _ MXG_IRDFX_DEV73 &
+6.       Run the command under /nfsdumps/scripts
+nohup ./online_db.sh mx7a_125_sql MXG_IRDFX_DEV73 &
+
+
+
+There’s a faster way to load latest BO marker dump into to a target DB:
+
+Under magdb9: /dumps/DEV_DUMPS or other server: /dumps/magdb9_dumps_ird2/DEV_DUMPS:
+
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S1
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S2
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S3
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S4
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S5
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S6
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S7
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S8
+C4K_mx9a_sql_MXG_DEV_DAILY.dump_S9
+
+Then just load these dumps with MD marker, it will take less time than the normal way. J
+
+
+ukspddmrx01a à 11a/11b
+
+ukspddmrx02a à 12a/12b
+
+
+
+1.       sybpos2/sybase5000 (oracle123)
+2.       DB server: magdb7.uk/magdb9.uk/magdb10.uk/magdb8.uk/ukspddmrx01a/02a
+DB service: mx7a/b_125_sql, mx9a/b_sql, mx8a_sql, mx10a_sql, mx11a/b_sql, mx12a/b_sql
+3.       Latest production dump location: magdb9.uk: /nfsdumps/PROD_dumps/; marker folder: /nfsdumps/db/dumps/tran/
+4.       Backup dump: magdb7.uk: /dumps//DEV_DUMPS/BACKUP_SPECIAL/
+Others: /dumps/magdb7dumps/DEV_DUMPS/BACKUP_SPECIAL/
+5.       Process checking: ps -ef|grep load
+6.       Log files location:
+a.       Normal: /dumps/logs/
+b.      Manually: /pos/home/sybpos2/logs
+c.       Online: /pos/home/sybpos2/logs/online_db/
+
+Var dumps 用MD marker
+
+
+## scb_calc_ir_crdiv_risk.sql
+text
+/* create store procedure */
+create procedure MUREXDB.scb_calc_ir_crdiv_risk
+as
+begin
+
+	/* Declare Variables*/
+	declare @ccybase char(15) 
+	declare @delta numeric(21,7) 
+	
+	declare @bump int
+	declare @col0 numeric(21,7)
+	declare @col1 numeric(21,7)
+	declare @col2 numeric(21,7)
+	declare @col0_s numeric(21,7)
+	declare @col1_s numeric(21,7)
+	declare @col2_s numeric(21,7)
+		
+	/* PV01 - IR DETLA*/
+	select M_CURR_BASE, M_DELTA
+	into #pv01_tmp
+	from (
+		select h1.M_HEADER1 as 'M_CURR_BASE', convert(decimal(35, 5
+), sum(b.M_COL)) as 'M_DELTA' 
+		from MUREXDB.IRDELTAB_RSK b, MUREXDB.IRDELTAH_RSK h1, MUREXDB.MUB#GRP_COMB_DBF p
+		where h1.M_CODE = 'Currency' and b.M_OUTPUT = 'Total dNPVdR' 
+		and p.M_LABEL = 'CRDIV_RATES_HED' and h1.M_PORT = b.M_PORT and h1.M_PORT = 
+p.M_UNIT and b.M_BATCH_H = h1.M_LABEL
+		group by h1.M_HEADER1
+	) pv01 
+
+	/* PV01 - Rate Bump*/
+	select CCY, RATE_BUMP, COL0, COL1, COL2
+	into #rate_bump_tmp
+	from (
+		select b.M_O_INFO as 'CCY', 
+		case when h1.M_HEADER2 = 'Central' then 0 
+		else convert
+(int, substring(h1.M_HEADER2, (charindex('(', h1.M_HEADER2)+1), charindex(')', h1.M_HEADER2) - (charindex('(', h1.M_HEADER2)+1))) * 5 end as 'RATE_BUMP', 
+		convert(decimal(35, 5), sum(b.M_COL0)) as 'COL0', 
+		convert(decimal(35, 5), sum(b.M_COL1)) as 'CO
+L1', 
+		convert(decimal(35, 5), sum(b.M_COL2)) as 'COL2'
+		from MUREXDB.IRCRDIVB_RSK b, MUREXDB.IRCRDIVH_RSK h1
+		where h1.M_PORT = b.M_PORT and b.M_LINE_H = h1.M_LABEL and b.M_BATCH_H = h1.M_DESC2 
+		group by b.M_O_INFO, h1.M_HEADER2 
+	) rate_bump 
+
+
+	/*
+ Express in USD */
+	select NUM, SPOT
+	into #usd_tmp
+	from (
+		select 
+		case when M_NUM = 'USD' then M_DEN else M_NUM end as 'NUM', 
+		case when M_REF_QUOT like 'USD%' 
+		then ( case when M_SPOT_RF_A <> 0 then convert(decimal(35, 7), 1/M_SPOT_RF_A) when M
+_SPOT_RF_B <> 0 then convert(decimal(35, 7), 1/M_SPOT_RF_B) else 0 end ) 
+		else ( case when M_SPOT_RF_A <> 0 then convert(decimal(35, 7), M_SPOT_RF_A) else convert(decimal(35, 7), M_SPOT_RF_B) end ) end as 'SPOT'
+		from MUREXDB.MPX_SPOT_DBF 
+		where (M_N
+UM = 'USD' or M_DEN = 'USD')
+		and M__ALIAS_='./BORATES'
+		and M__DATE_= (select max(M__DATE_) from MUREXDB.MPX_SPOT_DBF where M__DATE_ not in (select max(M__DATE_) from MUREXDB.MPX_SPOT_DBF))
+	) usd
+
+
+	/* Final Result */
+	select CCY, RATE_BUMP, COL0, COL
+1, COL2, VOL, COL0_S, COL1_S, COL2_S
+	into #final_tmp
+	from (
+		select rb.CCY, rb.RATE_BUMP, 
+		case when rb.CCY = 'USD' then rb.COL0 else convert(decimal(35, 5), rb.COL0 * us.SPOT) end as 'COL0', 
+		case when rb.CCY = 'USD' then rb.COL1 else convert(deci
+mal(35, 5), rb.COL1 * us.SPOT) end as 'COL1', 
+		case when rb.CCY = 'USD' then rb.COL2 else convert(decimal(35, 5), rb.COL2 * us.SPOT) end as 'COL2', 
+		case when rb.CCY = 'USD' then isnull(pv.M_DELTA, 0) else convert(decimal(35, 5), (isnull(pv.M_DELTA, 0
+) * us.SPOT)) end as 'VOL',
+		case when rb.COL0 = 0 then 0 else (case when rb.CCY = 'USD' then convert(decimal(35, 5), (rb.COL0 - (isnull(pv.M_DELTA, 0) * rb.RATE_BUMP))) 
+		else convert(decimal(35, 5) , convert(decimal(35, 5), (rb.COL0 - (isnull(pv.M_DEL
+TA, 0) * rb.RATE_BUMP))) * us.SPOT) end) end as 'COL0_S',
+		case when rb.COL1 = 0 then 0 else (case when rb.CCY = 'USD' then convert(decimal(35, 5), (rb.COL1 - (isnull(pv.M_DELTA, 0) * rb.RATE_BUMP))) 
+		else convert(decimal(35, 5) , convert(decimal(35, 5
+), (rb.COL1 - (isnull(pv.M_DELTA, 0) * rb.RATE_BUMP))) * us.SPOT) end) end as 'COL1_S',
+		case when rb.COL2 = 0 then 0 else (case when rb.CCY = 'USD' then convert(decimal(35, 5), (rb.COL2 - (isnull(pv.M_DELTA, 0) * rb.RATE_BUMP))) 
+		else convert(decimal(
+35, 5) , convert(decimal(35, 5), (rb.COL2 - (isnull(pv.M_DELTA, 0) * rb.RATE_BUMP))) * us.SPOT) end) end as 'COL2_S'
+		from #rate_bump_tmp rb 
+		left join #pv01_tmp pv on (rb.CCY = pv.M_CURR_BASE) 
+		left join #usd_tmp us on (rb.CCY = us.NUM) 
+	) final or
+der by CCY, RATE_BUMP
+		
+	/* Create output table */
+	create table #irmatrix_export_tmptbl
+	(
+		M_IDENTITY   numeric(9,0)  identity,
+		OUTPUT_RECORD varchar(350)
+	)
+	
+	/* Data insertion for output table */
+	declare ccybase_c cursor for select CCY from #fin
+al_tmp group by CCY
+	open ccybase_c
+	fetch ccybase_c into @ccybase
+	while (@@sqlstatus != 2)
+	begin
+
+		insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values (rtrim(@ccybase) + '-DELTA')
+		insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values ('R
+ATE_BUMP,0')
+		
+		declare delta_v cursor for select top 1 VOL from #final_tmp where CCY = rtrim(@ccybase)
+		open delta_v
+		fetch delta_v into @delta
+			insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values ('0,' + convert(char(40), @delta))
+		close d
+elta_v
+		deallocate cursor delta_v
+		
+		insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values (rtrim(@ccybase) + '-RAW,,,,' + rtrim(@ccybase) + '-STRIPPED')
+		insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values ('RATE_BUMP,-25,0,25,RATE_BUMP,-
+25,0,25')
+		
+		declare bump_a cursor for select RATE_BUMP, COL0, COL1, COL2, COL0_S, COL1_S, COL2_S from #final_tmp where CCY = rtrim(@ccybase)
+		open bump_a
+		fetch bump_a into @bump, @col0, @col1, @col2, @col0_s, @col1_s, @col2_s
+		while (@@sqlstatus !=
+ 2)
+		begin
+			begin
+				if (@bump != 5 and @bump != 10 and @bump != 85 and @bump != 95 and @bump != -5 and @bump != -10 and @bump != -85 and @bump != -95)
+				insert into #irmatrix_export_tmptbl (OUTPUT_RECORD) values (rtrim(convert(char(40), @bump)) + '
+,' + rtrim(convert(char(40), @col0)) + ',' + rtrim(convert(char(40), @col1)) + ',' + rtrim(convert(char(40), @col2)) + ',' + rtrim(convert(char(40), @bump)) + ',' + rtrim(convert(char(40), @col0_s)) + ',' + rtrim(convert(char(40), @col1_s)) + ',' + rtrim(
+convert(char(40), @col2_s)))
+			end
+			fetch bump_a into @bump, @col0, @col1, @col2, @col0_s, @col1_s, @col2_s
+		end
+		close bump_a
+		deallocate cursor bump_a
+		
+		fetch ccybase_c into @ccybase
+		
+	end
+	close ccybase_c
+	deallocate cursor ccybase_c
+	
+	/* Output data */
+	select rtrim(OUTPUT_RECORD) from #irmatrix_export_tmptbl order by M_IDENTITY asc
+end
+
+                                                                                                                                                          
+																
+
