@@ -2037,7 +2037,7 @@ sp_rename [ @objname = ] 'object_name' , [ @newname = ] 'new_name' [ , [ @objtyp
 SQL Server数据库引擎为了保证每一次只有一个线程同时访问同一个资源的对象而采用的一种锁定机制，系统有大量锁时就产生了“数据阻塞”。因此你的数据库设计和程序编制应该科学和合理，以便让sql server涉及的锁定的数量降到最少。当你的系统的反应迟缓时就应该注意数据库是否产生了阻塞。sp_lock是SQL Server 2000 的一个系统存储过程，EXECUTE sp_lock 执行这个存储过程，可以查看当前阻塞的数据表，以便分析程序，解决问题。								
 								
 ## sp_rename								
-	sp_rename tb1,tb2    , then re-create tb1 and feed it. The other object(view, store procedure) still point to tb2. not sure, lisson to Journey's cource voice record in my phone.							
+	sp_rename tb1,tb2    , then re-create tb1 and feed it. The other object(view, store procedure) still point to tb2. not sure, lisson to Journey's cource voice record in my phone
 								
 								
 ## sp_dboption  / sp_helpdb								
@@ -2098,5 +2098,147 @@ option_name 的新设置。如果省略此参数，sp_dboption 将返回当前�
 								
 								
 sp_chgattribute 'DM_UDF_IRD_REP','identity_burn_max',0,'0'								
-go								
+go
+
+
+## Sybase系统表
+syscomments	一行或者多行记录了每一视图、规则、缺省值、触发器和存储过程	
+	## select distinct object_name(id) from syscomments where text like '%@str%' ，查看包含某个字符串@str的数据对象名称	
+systypes	一行纪录了每一个由系统提供的和用户定义的数据类型	
+sysusers	一行记录了一个数据库的合法用户	
+sysconfigures	一行纪录了用户可以设置的配置参数	
+syscurconfigs	有关SQL	Server当前正使用的配置参数情况
+sysdatabases	一行纪录SQL	Server中的一个数据库
+sysdevices	一行纪录数据库每一个磁带转储设备，盘转储设备，数据库设备和磁盘分区	
+syslocks	有关动态锁的情况	
+syslogins	一行纪录了每一个有效的SQL	Server的用户
+sysmessages	一行记录了每一个系统错误或者警告	
+sysprocesses	有关server进程的情况	
+sysremotelogins	一行记录了一个远程用户	
+sysservers	一行记录了一个远程server	
+systypes	一行纪录了每一个由系统提供的和用户定义的数据类型	
+sysusers	一行记录了一行记录了一个数据库的合法用户	
+sysconfigures	一行纪录了用户可以设置的配置参数	
+syscurconfigs	有关SQL	Server当前正使用的配置参数情况
+sysdatabases	一行纪录SQL	Server中的一个数据库
+sysdevices	一行纪录数据库每一个磁带转储设备，盘转储设备，数据库设备和磁盘分区	
+syslocks	有关动态锁的情况	
+syslogins	一行纪录了每一个有效的SQL	Server的用户
+sysmessages	一行记录了每一个系统错误或者警告	
+sysprocesses	有关server进程的情况	
+sysremotelogins	一行记录了一个远程用户	
+sysservers	一行记录了一个远程server	
+sysusages	一行记录了分配给每个数据库的每个磁盘分片	
+sysatterrates	一行记录了分配给SQL	Server用户在当前数据库的标识
+syscolumns	一行记录了一个表或视图的每一列，一个存储过程的每一个参数	
+sysdepends	一行记录了由一个过程、视图或者触发器所参照的每一个过程、视图或者表	
+sysindexes	一行记录了每一个聚集或者非聚集索引，每一个不带索引的表，含有text或者image列的表	
+syskeys	一行记录了每一个主玛、外玛或者公用玛	
+syslogs	事务日志	
+sysobjects	纪录表、视图、存储过程、规则、缺省值、触发器和临时表（在tempdb中）	
+sysprocedures	纪录视图、规则、缺省值、触发器和过程	
+sysprocts	纪录用户权限信息	
+syssegments	纪录每一个片段（命名的磁盘）	
+
+##  Sybase SQL 函数
+http://blog.csdn.net/ljd_1986413/article/details/8794295
+## ASCII 返回表达式中第一个字符的ASCII代码
+select ASCII('Aennet') => 结果65
+select ASCII('Bennet') => 结果66
+
+## db_name返回指定数据库的名称,
+select db_name() => 结果MXG_FDR
+select db_name(4) => 返回ID为4的数据库名称，结果MXGDM_FDR
+
+## next_identity 返回insert可用的下一个标识值即下一个自增的ID
+select next_identity('TABLE#LIST#SWIFT_CT_DBF') =〉结果13446，注意如果这个表不是自增，则返回null
+
+##  obeject_id(object_name)，参数object_name是数据库对象（表、视图、过程、触发器、缺省值或规则）的名称,函数返回指定对象的对象ID，对象ID存储在sysobjects的ID列中。
+select object_id('TABLE#LIST#SWIFT_CT_DBF') => 结果 1945170719
+
+##  obeject_name(object_id)，参数object_id是数据库对象（表、视图、过程、触发器、缺省值或规则）的对象ID,对象ID存储在sysobjects的ID列中，函数返回指定对象的对象名称
+select object_name(1945170719) => 结果TABLE#LIST#SWIFT_CT_DBF
+
+## host_id 返回当前Adaptive Server客户端机操作系统进程ID,
+select host_id() => 结果6092
+
+## host_name 返回当前Adaptive Server客户端机操作系统进程名称,在客户端可自定义该名称，一般用local计算机名称。
+select host_name() => 结果CNNPC03BSQR
+
+## reverse(@char_var) 反写@char_var中的文本
+
+## substring(@char_var,start_index,length)
+
+## datalength(@char_var) 返回@char_var字符串的长度值，忽略尾空 
+
+## charindex('and',@sql_conditon_str) 返回'and'字符串在@sql_conditon_str 变量中的开始位置（即index，首字符的index为1），否则为0
+
+## patindex('%pattern%',@sql_conditon_str),  查询模式字符串“%pattern%”首次出现的位置变量中的开始位置（即index，首字符的index为1），否则为0
+
+## 小写转换函数 ，  lower(char_expr)
+
+
+##   stuff(param1, startIndex, length, param2)
+说明：将param1中自startIndex(SQL中都是从1开始，而非0)起，删除length个字符，然后用param2替换删掉的字符。*/
+
+
+## Sybase备份恢复
+Sybase数据库的dump和load	
+1.     划分空间，为新建的数据库划分足够（大于等于需要备份的数据库）的空间，注意新数据库的版本要大于等于老数据库的版本。	
+2.     检查老库接口文件，确认老库的interface文件的backupserver指向的地址和端口，通常会是本机的端口，但不排除使用远程的备份服务器。注意端口不要和已使用的端口重合。	
+3.     在老库所在的机器上启动备份服务器，使用sowserver确认服务器已经启动。	
+4.     DUMP	
+use master	
+sp_dboption 要备份的数据库,’single user’,ture  #将数据库置为单用户模式	
+sp_flushstats  #等待页面刷新	
+checkpoint	
+use 要备份的数据库	
+sp_flushstats	
+checkpoint	
+dump database pms to ‘data_dump/pms_dump.dat’   #备份数据库pms到指定的文件中	
+5.     将DUMP完毕的文件传送至新库所在的主机中（参考步骤1）	
+6.     启动新库的备份服务（参考步骤3）	
+7.     LOAD	
+load database pms from ‘/lxq/data/pppp’ 	
+dbcc reindex(xxx)  	
+sp_recompile  #存储过程编译和一致性检查	
+8.     联机数据库，整个数据库load完毕后，还需要将数据库联机	
+Online database pms 	
+	
+How to complete above steps in SCB	
+1.     划分空间: load dump 之前，应先检查空间是否足够大（take mxg_var as example）。	
+	[mx12b_sql]
+	master=TCP,ukspddmrx02a.uk,8202
+	query=TCP,ukspddmrx02a.uk,8202
+
+
+##  Sybase 命令
+## DUMP TRANSACTION [数据库名] WITH NO_LOG
+这个命令的目的是把数据库的日志清空而不是停止记录。执行完后,日志会清空但是数据库依然会继续记录。
+The transaction log in database MXG_IRDFX_DEV9 is almost full.  Your transaction is being suspended until space is made available in the log.
+
+
+
+Below is coming from Yahui
+/dev/vx/rdsk/ukspddmrx01a_hraw1 $ mx11a
+1> use MXG_IRDFX_DEV9
+2> go
+1> dump tran MXG_IRDFX_DEV9 with no_log
+2> go
+
+
+1> sp__dbfree MXG_IRDFX_DEV9
+2> go
+ Database                       Type                         Size (MB)   Freespace (MB) % Free     
+ ------------------------------ ---------------------------- ----------- -------------- -----------
+ MXG_IRDFX_DEV9                 data only                         400000         111153          27
+ MXG_IRDFX_DEV9                 log only                           20000          19921          99
+done
+
+
+##  SET NOCOUNT ON	
+	在存储过程中，经常用到SET NOCOUNT ON；作用：阻止在结果集中返回显示受T-SQL语句或则usp影响的行计数信息(如： 549 行受影响)
+	当SET ONCOUNT ON时候，不返回计数，当SET NOCOUNT OFF时候，返回计数；即使当SET NOCOUNT ON 时候，也更新@@RowCount；
+	当SET NOCOUNT on时候，将不向客户端发送存储过程每个语句的DONE_IN_proc消息，如果存储过程中包含一些并不返回实际数据的语句，网络通信流量便会大量减少，可以显著提高应用程序性能；
+	SET NOCOUNT 指定的设置时在执行或运行时候生效，分析时候不生效。
 
